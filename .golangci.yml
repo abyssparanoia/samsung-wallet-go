@@ -1,0 +1,162 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs:
+    - vendor
+  skip-files:
+    - ".*\\.pb\\.go$"
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment # Disabled when performance is not critical
+
+  gocyclo:
+    min-complexity: 15
+
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+
+  gofmt:
+    simplify: true
+
+  goimports:
+    local-prefixes: github.com/abyssparanoia/samsung-wallet-go
+
+  golint:
+    min-confidence: 0.8
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+
+  misspell:
+    locale: US
+
+  lll:
+    line-length: 120
+
+  unused:
+    check-exported: false
+
+  unparam:
+    check-exported: false
+
+  nakedret:
+    max-func-lines: 30
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: false
+
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - gosec
+    - interfacer
+    - unconvert
+    - dupl
+    - goconst
+    - gocognit
+    - gofumpt
+    - goheader
+    - gocritic
+    - revive
+    - misspell
+    - lll
+    - unparam
+    - nakedret
+    - prealloc
+    - exportloopref
+    - exhaustive
+    - nilerr
+    - nolintlint
+    - rowserrcheck
+    - sqlclosecheck
+    - structcheck
+    - varcheck
+    - whitespace
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - goconst
+
+    # Exclude known linters from partially hard-to-fix problems
+    - path: examples/
+      linters:
+        - errcheck
+        - gosec
+
+    # Exclude shadow checking on the variable named err
+    - text: 'shadow: declaration of "err"'
+      linters:
+        - govet
+
+    # Exclude lll issues for long lines with go:generate
+    - linters:
+        - lll
+      source: "^//go:generate "
+
+  exclude:
+    # errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
+    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+
+    # golint: False positive when used with //nolint
+    - "comment on exported (type|method|function) .+ should be of the form"
+
+    # govet: Common false positives
+    - "possible misuse of unsafe.Pointer"
+    - "should have signature"
+
+    # staticcheck: Developers tend to write in C-style with an explicit 'break' in a 'switch', so it's ok to ignore
+    - ineffective break statement. Did you mean to break out of the outer loop
+
+severity:
+  default-severity: error
+  case-sensitive: false

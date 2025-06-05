@@ -1,0 +1,57 @@
+{
+  "card": {
+    "type": "boardingpass",
+    "subType": "airlines",
+    "data": [
+      {
+        "refId": "{refId}",
+        "createdAt": {createdAt},
+        "updatedAt": {updatedAt},
+        "language": "{language}",
+        "attributes": {
+          "title": "BOARDING PASS",
+          "transitType": "Airline",
+          "providerLogo": "https://gpp.walletsvc.samsung.com/mcs/images/contents/wallet_intro_logo.png",
+          "providerLogo.darkUrl": "https://gpp.walletsvc.samsung.com/mcs/images/contents/wallet_intro_logo.png",
+          "providerName": "SAMSUNG AIR",
+          "user": "MS. Jane Doe",
+          "vehicleNumber": "SE701",
+          "seatClass": "First Class",
+          "seatNumber": "1A",
+          "reservationNumber": "1A2B3C",
+          "boardingPriority": "First",
+          "boardingSeqNo": "1",
+          "boardingTime": {boardingTime},
+          "boardingTime.utcOffset": "UTC+09:00",
+          "gateClosingTime": {gateClosingTime},
+          "gateClosingTime.utcOffset": "UTC+09:00",
+          "baggageAllowance": "15KG",
+          "departName": "SEOUL/INCHEON",
+          "departCode": "ICN",
+          "departTerminal": "1",
+          "departGate": "1",
+          "estimatedOrActualStartDate": {estimatedOrActualStartDate},
+          "estimatedOrActualStartDate.utcOffset": "UTC+09:00",
+          "arriveName": "SAN FRANCISCO",
+          "arriveCode": "SFO",
+          "arriveTerminal": "2",
+          "arriveGate": "2",
+          "estimatedOrActualEndDate": {estimatedOrActualEndDate},
+          "estimatedOrActualEndDate.utcOffset": "UTC-07:00",
+          "bgColor": "#003087",
+          "fontColor": "#FFFFFF",
+          "appLinkLogo": "https://play-lh.googleusercontent.com/ZnFa1roZ7hpv9j-jIAcBjmjuDl2x-FnuwTE0OYvbbcwvf5VPzOQQiKBXGK7d-APTvag=w240-h480-rw",
+          "appLinkName": "Boarding Pass Link",
+          "appLinkData": "appLink url",
+          "extraInfo": "{\"count\":3,\"info\":[{\"title\":\"Baggage Allowance\",\"content\":[\"15 KG\"]},{\"title\":\"Boarding Priority\",\"content\":[\"YES\"]},{\"title\":\"Seat Class\",\"content\":[\"First Class\"]}]}",
+          "noticeDesc": "<ul><li>TEST</li></ul>",
+          "csInfo": "{\"call\":\"555) 123-4567\", \"email\":\"cs@email.com\", \"website\":\"https://www.samsung.com\"}",
+          "barcode.value": "CS16138353212584806754FG1802",
+          "barcode.serialType": "QRCODE",
+          "barcode.ptFormat": "QRCODESERIAL",
+          "barcode.ptSubFormat": "QR_CODE"
+        }
+      }
+    ]
+  }
+}

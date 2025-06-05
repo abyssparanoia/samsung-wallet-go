@@ -1,0 +1,35 @@
+{
+  "card": {
+    "type": "coupon",
+    "data": [
+      {
+        "refId": "{refId}",
+        "createdAt": {createdAt},
+        "updatedAt": {updatedAt},
+        "language": "en",
+        "attributes": {
+          "title": "Samsung Ice Cream Coupon",
+          "orderId": "coupon-order-001",
+          "mainImg": "https://kr-cdn-gpp.stg.mcsvc.samsung.com/devops/ops/partner-portal/test-tool/assets/img/coupon-ice-cream-blue.jpg",
+          "brandName": "Ice Cream Company",
+          "expiry": {expiry},
+          "issueDate": {issueDate},
+          "redeemDate": "",
+          "noticeDesc": "<br>Coupon test<br>",
+          "editableYn": "N",
+          "deletableYn": "Y",
+          "displayRedeemButtonYn": "Y",
+          "addToWalletCouponYn": "Y",
+          "notificationYn": "Y",
+          "appLinkLogo": "https://play-lh.googleusercontent.com/ZnFa1roZ7hpv9j-jIAcBjmjuDl2x-FnuwTE0OYvbbcwvf5VPzOQQiKBXGK7d-APTvag=w240-h480-rw",
+          "appLinkName": "Coupon",
+          "appLinkData": "https://www.samsung.com/",
+          "barcode.value": "1111222233334444",
+          "barcode.serialType": "BARCODE",
+          "barcode.ptFormat": "BARCODESERIAL",
+          "barcode.ptSubFormat": "CODE128"
+        }
+      }
+    ]
+  }
+}

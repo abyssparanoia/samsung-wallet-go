@@ -1,0 +1,48 @@
+{
+  "card": {
+    "type": "ticket",
+    "subType": "entrances",
+    "data": [
+      {
+        "refId": "{refId}",
+        "createdAt": {createdAt},
+        "updatedAt": {updatedAt},
+        "language": "{language}",
+        "attributes": {
+          "title": "TICKET: Lost Time",
+          "category": "Movie",
+          "eventId": "event-001",
+          "orderId": "ticket-order-001",
+          "mainImg": "https://djcpagh05u38x.cloudfront.net/wlt/kr/stg/x1IWgocnRoqA5DmWPykfKQ/6vWQK89PSs6SWRF6hrZU8Q.png",
+          "logoImage": "https://gpp.walletsvc.samsung.com/mcs/images/contents/wallet_intro_logo.png",
+          "logoImage.darkUrl": "https://gpp.walletsvc.samsung.com/mcs/images/contents/wallet_intro_logo.png",
+          "providerName": "Samsung Ticket Company",
+          "seatClass": "Normal",
+          "entrance": "1",
+          "seatNumber": "1 A",
+          "seatLayoutImage": "https://us-cdn-gpp.mcsvc.samsung.com/lib/image/ticket_default.png",
+          "issueDate": {issueDate},
+          "reservationNumber": "reservation-number-001",
+          "user": "MS. Jane Doe",
+          "certification": "R",
+          "startDate": {startDate},
+          "endDate": {endDate},
+          "person1": "{\"person\" : [{\"category\" : \"Adult\", \"count\": 1 },{\"category\" : \"Child\", \"count\": 2 }]}",
+          "noticeDesc": "<ul><li>Ticket Test</li></ul>",
+          "csInfo": "{\"call\":\"555) 123-4567\", \"email\":\"cs@email.com\", \"website\":\"https://homepage.com/cs\"}",
+          "appLinkLogo": "https://play-lh.googleusercontent.com/ZnFa1roZ7hpv9j-jIAcBjmjuDl2x-FnuwTE0OYvbbcwvf5VPzOQQiKBXGK7d-APTvag=w240-h480-rw",
+          "appLinkName": "Ticket",
+          "appLinkData": "https://www.samsung.com/",
+          "bgColor": "#065535",
+          "fontColor": "#FFFFFF",
+          "blinkColor": "#00FFFF",
+          "barcode.value": "CS16138353212584806754FG1802",
+          "barcode.serialType": "QRCODE",
+          "barcode.ptSubFormat": "QR_CODE",
+          "barcode.ptFormat": "QRCODESERIAL",
+          "locations": [{}]
+        }
+      }
+    ]
+  }
+}
