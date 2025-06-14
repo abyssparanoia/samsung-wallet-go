@@ -17,7 +17,7 @@
         <dependency>
             <artifactId>nimbus-jose-jwt</artifactId>
             <groupId>com.nimbusds</groupId>
-            <version>9.31</version>
+            <version>10.3</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
