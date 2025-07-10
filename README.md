@@ -165,6 +165,31 @@ func main() {
 4. **CertificateID**: 4-digit alphanumeric certificate identifier
 5. **CardIDs**: Specific identifiers for each card type you register
 
+### Handling Samsung's Public Key Certificate
+
+When you receive Samsung's public key in `.crt` format, you may need to convert it to the proper format for Go applications. The certificate format provided by Samsung might not work directly with Go's crypto libraries.
+
+**Convert .crt to .pem format:**
+
+```bash
+openssl x509 -in ./secret/samsung_wallet_public.crt -pubkey -noout > samsung_public_key.pem
+```
+
+**Alternative conversion methods:**
+
+```bash
+# Convert .crt to .pem (full certificate)
+openssl x509 -in certificate.crt -out certificate.pem -outform PEM
+
+# Extract public key from .crt
+openssl x509 -in certificate.crt -pubkey -noout > public_key.pem
+
+# Convert .cer to .pem
+openssl x509 -in certificate.cer -out certificate.pem -outform PEM
+```
+
+After conversion, use the `.pem` file content as your `SamsungPublicKey` in the configuration.
+
 ### Environment Variables
 
 ```bash

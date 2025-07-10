@@ -1,5 +1,7 @@
 module github.com/abyssparanoia/samsung-wallet-go
 
+godebug x509negativeserial=1
+
 go 1.24.0
 
 require (
