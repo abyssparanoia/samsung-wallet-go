@@ -275,6 +275,14 @@ func (b *EventTicketBuilder) SetGroupInfo(groupInfo1, groupInfo2, groupInfo3 str
 	return b
 }
 
+// SetProviderViewLink configures the provider view link JSON payload
+func (b *EventTicketBuilder) SetProviderViewLink(link string) *EventTicketBuilder {
+	if link != "" {
+		b.attributes.ProviderViewLink = link
+	}
+	return b
+}
+
 // SetCustomerServiceInfo sets customer service information as JSON string
 func (b *EventTicketBuilder) SetCustomerServiceInfo(csInfoJSON string) *EventTicketBuilder {
 	b.attributes.CSInfo = csInfoJSON

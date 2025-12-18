@@ -2,6 +2,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -28,10 +30,13 @@ func main() {
 	// Each card type has a specific cardID obtained from Partners Portal
 	cardID := getEnv("SAMSUNG_WALLET_EVENT_TICKET_CARD_ID", "event_ticket_id")
 
+	startDate := time.Now().AddDate(0, 0, -1)
+	endDate := startDate.AddDate(0, 0, 2)
+
 	// Create event ticket using official Samsung Wallet structure
-	eventTicket := client.NewEventTicket("ET001", "Samsung Developers Conference 2024").
+	eventTicket := client.NewEventTicket(generateRefID(), "アリーナツアー2024 in 東京ドーム").
 		SetSubType(wallet.TicketSubTypePerformances). // Using defined constants for type safety
-		SetProviderName("Samsung Electronics").
+		SetProviderName("MOALA Ticket").
 		SetMainImage("https://developer.samsung.com/sd2/images/media/content/v1/samsung-dev-con-img.jpg").
 		SetLogoImages(
 			"https://developer.samsung.com/sd2/images/media/logo/samsung-logo.png",      // light mode
@@ -40,35 +45,35 @@ func main() {
 		SetSubtitle("VIP Access").
 		SetEventInfo("EVENT001", "GROUP001", "ORDER001").
 		SetSeatInfo("VIP Section", "Main Entrance", "A-12").
-		SetTicketInfo("RES123456", "John Doe", "R", "Premium").
+		SetTicketInfo("RES123456", "舟口翔梧", "R", "Premium").
 		SetDates(
 			timePtr(time.Now()), // issue date
-			timePtr(time.Date(2024, 3, 15, 9, 30, 0, 0, time.UTC)), // start date
-			timePtr(time.Date(2024, 3, 15, 18, 0, 0, 0, time.UTC)), // end date
+			timePtr(startDate),  // start date
+			timePtr(endDate),    // end date (start + 1 day)
 		).
-		SetHolderInfo("John Doe", "", ""). // no photo for this example
-		SetQRCode("TICKET123456789SDC2024VIP").
+		SetHolderInfo("舟口翔梧", "", ""). // no photo for this example
 		SetStyling("#1F2937", "#FFFFFF", "#3B82F6"). // bg, font, blink colors
 		SetPersonInfoFromStruct([]wallet.PersonInfo{
 			{Category: "Adult", Count: 1},
 		}).
 		SetLocationsFromStruct([]wallet.TicketLocation{
 			{
-				Lat:     37.5665,
-				Lng:     126.9780,
-				Address: "123 Samsung Plaza, Seoul, South Korea",
-				Name:    "Samsung Convention Center",
+				Lat:     35.4212,
+				Lng:     139.454,
+				Address: "東京都文京区後楽1丁目3番61号",
+				Name:    "東京ドーム",
 			},
 		}).
 		SetNoticeDescription("<ul><li>Please arrive 30 minutes before the event</li><li>Valid photo ID required</li></ul>").
 		SetGroupInfo("Adult 1", "VIP", "Premium").
 		SetCustomerServiceInfoFromStruct(wallet.CustomerServiceInfo{
-			Call:    "+82-2-1234-5678",
-			Email:   "support@samsungdeveloper.com",
-			Website: "https://developer.samsung.com/support",
+			Call:    "+81-90-6198-6430",
+			Email:   "shogo.funaguchi@playground.live",
+			Website: "https://moala.playground.live/contact",
 		}).
-		SetAppLink("Samsung Developer", "https://developer.samsung.com/logo.png", "https://developer.samsung.com").
-		SetClassification("ONETIME")
+		SetProviderViewLink(`{"count":1,"info":[{"text":"チケット画面へ","type":"web","link":"https://ticket.moala.fun/bundles/"}]}`).
+		SetAppLink("MOALA Ticket", "https://../applinklogo.png", "https://ticket.moala.fun/bundles").
+		SetClassification("REGULAR")
 
 	// Add Korean localization
 	eventTicket.AddLocalization("ko", map[string]interface{}{
@@ -140,4 +145,14 @@ func getEnv(key, defaultValue string) string {
 
 func timePtr(t time.Time) *time.Time {
 	return &t
+}
+
+// generateRefID returns a new random reference ID each run.
+func generateRefID() string {
+	b := make([]byte, 8)
+	if _, err := rand.Read(b); err != nil {
+		// Fallback to timestamp if randomness fails
+		return fmt.Sprintf("ref-%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b)
 }
