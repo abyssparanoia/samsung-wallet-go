@@ -1,4 +1,3 @@
-//go:debug x509negativeserial=1
 package main
 
 import (
@@ -34,28 +33,24 @@ func main() {
 	endDate := startDate.AddDate(0, 0, 2)
 
 	// Create event ticket using official Samsung Wallet structure
-	eventTicket := client.NewEventTicket(generateRefID(), "アリーナツアー2024 in 東京ドーム").
+	eventTicket := client.NewEventTicket(generateRefID(), "アリーナツアー2026 in 東京ドーム").
 		SetSubType(wallet.TicketSubTypePerformances). // Using defined constants for type safety
 		SetProviderName("MOALA Ticket").
-		SetMainImage("https://developer.samsung.com/sd2/images/media/content/v1/samsung-dev-con-img.jpg").
+		SetProviderViewLink("https://google.com").
+		SetMainImage("https://ticket.moala.fun/og.png").
 		SetLogoImages(
-			"https://developer.samsung.com/sd2/images/media/logo/samsung-logo.png",      // light mode
-			"https://developer.samsung.com/sd2/images/media/logo/samsung-logo-dark.png", // dark mode
+			"https://ticket.moala.fun/og.png", // light mode
+			"https://ticket.moala.fun/og.png", // dark mode
 		).
-		SetSubtitle("VIP Access").
 		SetEventInfo("EVENT001", "GROUP001", "ORDER001").
-		SetSeatInfo("VIP Section", "Main Entrance", "A-12").
-		SetTicketInfo("RES123456", "舟口翔梧", "R", "Premium").
+		SetSeatInfo("", "", "").
+		SetTicketInfo("RES123456", "", "", "gfrade").
 		SetDates(
 			timePtr(time.Now()), // issue date
 			timePtr(startDate),  // start date
 			timePtr(endDate),    // end date (start + 1 day)
 		).
-		SetHolderInfo("舟口翔梧", "", ""). // no photo for this example
-		SetStyling("#1F2937", "#FFFFFF", "#3B82F6"). // bg, font, blink colors
-		SetPersonInfoFromStruct([]wallet.PersonInfo{
-			{Category: "Adult", Count: 1},
-		}).
+		SetStyling("#1F2937", "#FFFFFF", ""). // bg, font, blink colors
 		SetLocationsFromStruct([]wallet.TicketLocation{
 			{
 				Lat:     35.4212,
@@ -64,16 +59,41 @@ func main() {
 				Name:    "東京ドーム",
 			},
 		}).
-		SetNoticeDescription("<ul><li>Please arrive 30 minutes before the event</li><li>Valid photo ID required</li></ul>").
-		SetGroupInfo("Adult 1", "VIP", "Premium").
-		SetCustomerServiceInfoFromStruct(wallet.CustomerServiceInfo{
-			Call:    "+81-90-6198-6430",
-			Email:   "shogo.funaguchi@playground.live",
-			Website: "https://moala.playground.live/contact",
+		SetNoticeDescFromStruct([]wallet.NoticeInfo{
+			{
+				Title: "チケット情報",
+				Content: []string{
+					"予約番号: RES123456",
+					"チケットコード: TKT-2024-ARENA-0001",
+					"券種: VIP",
+				},
+			},
+			{
+				Title: "<a href='https://ticket.moala.fun/bundles/'>チケット詳細はこちら</a>",
+				Content: []string{
+					"チケットに関するお問い合わせはアプリからお願いいたします",
+				},
+			},
 		}).
-		SetProviderViewLink(`{"count":1,"info":[{"text":"チケット画面へ","type":"web","link":"https://ticket.moala.fun/bundles/"}]}`).
+		// SetGroupInfo("Adult 1", "VIP", "Premium").
+		// SetCustomerServiceInfoFromStruct(wallet.CustomerServiceInfo{
+		// 	Call:    "+81-90-6198-6430",
+		// 	Email:   "shogo.funaguchi@playground.live",
+		// 	Website: "https://moala.playground.live/contact",
+		// }).
 		SetAppLink("MOALA Ticket", "https://../applinklogo.png", "https://ticket.moala.fun/bundles").
-		SetClassification("REGULAR")
+		SetClassification("ONE_TIME") // Using defined constants for type safety
+		// SetSubtitle("VIP Access").
+		// SetHolderInfo("舟口翔梧", "", ""). // no photo for this example
+		// SetPersonInfoFromStruct([]wallet.PersonInfo{
+		// 	{Category: "Adult", Count: 1},
+		// }).
+		// SetGroupInfo("Adult 1", "VIP", "Premium").
+		// SetCustomerServiceInfoFromStruct(wallet.CustomerServiceInfo{
+		// 	Call:    "0120-123-456",
+		// 	Email:   "example@example.com",
+		// 	Website: "contact",
+		// })
 
 	// Add Korean localization
 	eventTicket.AddLocalization("ko", map[string]interface{}{
@@ -95,9 +115,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create event ticket link: %v", err)
 	}
-
-	fmt.Printf("Event Ticket ATW Link: %s\n", link)
-	fmt.Printf("Note: CDATA expires in 30 seconds for security\n")
 
 	// Display card details
 	fmt.Printf("\nCard Details:\n")
@@ -133,7 +150,9 @@ func main() {
 	}
 
 	fmt.Printf("\nThis event ticket is ready to be added to Samsung Wallet!\n")
-	fmt.Printf("Open the link above on an Android device with Samsung Wallet installed.\n")
+	fmt.Printf("Open the link below on an Android device with Samsung Wallet installed.\n")
+	fmt.Printf("\nEvent Ticket ATW Link: %s\n", link)
+	fmt.Printf("Note: CDATA expires in 30 seconds for security\n")
 }
 
 func getEnv(key, defaultValue string) string {

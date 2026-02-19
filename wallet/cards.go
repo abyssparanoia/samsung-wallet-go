@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -255,9 +256,36 @@ type TicketLocation struct {
 	Name    string  `json:"name"`
 }
 
-// SetNoticeDescription sets notice description (supports HTML, max 1024 chars)
-func (b *EventTicketBuilder) SetNoticeDescription(noticeHTML string) *EventTicketBuilder {
-	b.attributes.NoticeDesc = noticeHTML
+// SetNoticeDescription sets notice description as a raw JSON string
+func (b *EventTicketBuilder) SetNoticeDescription(noticeJSON string) *EventTicketBuilder {
+	b.attributes.NoticeDesc = noticeJSON
+	return b
+}
+
+// NoticeDesc represents the notice description structure for Samsung Wallet
+type NoticeDesc struct {
+	Count int          `json:"count"`
+	Info  []NoticeInfo `json:"info"`
+}
+
+// NoticeInfo represents a single notice item
+type NoticeInfo struct {
+	Title   string   `json:"title"`
+	Content []string `json:"content"`
+}
+
+// SetNoticeDescFromStruct sets notice description from struct
+func (b *EventTicketBuilder) SetNoticeDescFromStruct(notices []NoticeInfo) *EventTicketBuilder {
+	desc := NoticeDesc{
+		Count: len(notices),
+		Info:  notices,
+	}
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(desc); err == nil {
+		b.attributes.NoticeDesc = string(bytes.TrimRight(buf.Bytes(), "\n"))
+	}
 	return b
 }
 
