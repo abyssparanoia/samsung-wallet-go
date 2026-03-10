@@ -24,10 +24,53 @@ const (
 type CardState string
 
 const (
-	CardStateAdded    CardState = "ADDED"
-	CardStateDeleted  CardState = "DELETED"
-	CardStateCanceled CardState = "CANCELED"
+	CardStateActive    CardState = "ACTIVE"
+	CardStateUpdated   CardState = "UPDATED"
+	CardStateExpired   CardState = "EXPIRED"
+	CardStateRedeemed  CardState = "REDEEMED"
+	CardStateHeld      CardState = "HELD"
+	CardStateAdded     CardState = "ADDED"
+	CardStateDeleted   CardState = "DELETED"
+	CardStateCanceled  CardState = "CANCELED"
+	CardStatePending   CardState = "PENDING"
+	CardStateSuspended CardState = "SUSPENDED"
 )
+
+// UpdateNotificationRequest represents a request body for the Update Notification API
+// POST /{cc2}/wltex/cards/{cardId}/updates
+type UpdateNotificationRequest struct {
+	Card UpdateNotificationCard `json:"card"`
+}
+
+// UpdateNotificationCard represents the card object in the update notification
+type UpdateNotificationCard struct {
+	Type string                   `json:"type"`
+	Data []UpdateNotificationData `json:"data"`
+}
+
+// UpdateNotificationData represents individual card data in the update notification
+type UpdateNotificationData struct {
+	RefID string    `json:"refId"`
+	State CardState `json:"state"`
+}
+
+// CancelNotificationRequest represents a request body for the Cancel Notification API
+// POST /{cc2}/wltex/cards/{cardId}/cancels
+type CancelNotificationRequest struct {
+	Card CancelNotificationCard `json:"card"`
+}
+
+// CancelNotificationCard represents the card object in the cancel notification
+type CancelNotificationCard struct {
+	Type string                   `json:"type"`
+	Data []CancelNotificationData `json:"data"`
+}
+
+// CancelNotificationData represents individual card data in the cancel notification
+type CancelNotificationData struct {
+	EventID string    `json:"eventId"`
+	State   CardState `json:"state"`
+}
 
 // Config holds the configuration for Samsung Wallet client
 type Config struct {

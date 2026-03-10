@@ -16,6 +16,9 @@ const (
 	pathCancelCard = "/v1/wallet/card/cancel"
 	pathGetCard    = "/v1/wallet/card/get"
 	pathCardState  = "/v1/wallet/card/state"
+
+	// Samsung Wallet Server API base URL
+	serverAPIBaseURL = "https://api-card.walletsvc.samsung.com"
 )
 
 // Client represents the Samsung Wallet client
@@ -304,6 +307,98 @@ func (c *Client) SetHTTPClient(client *http.Client) {
 // GetJWTManager returns the JWT manager instance
 func (c *Client) GetJWTManager() *JWTManager {
 	return c.jwtManager
+}
+
+// SendUpdateNotification sends a card state update to Samsung Wallet Server API.
+// This corresponds to the Update Notification API: POST /{cc2}/wltex/cards/{cardId}/updates
+// Use this to update individual card states (e.g., DELETED, EXPIRED, SUSPENDED).
+func (c *Client) SendUpdateNotification(cardID string, cardType string, data []UpdateNotificationData, countryCode string) error {
+	if cardID == "" {
+		return fmt.Errorf("card ID is required")
+	}
+	if countryCode == "" {
+		return fmt.Errorf("country code is required")
+	}
+
+	reqBody := UpdateNotificationRequest{
+		Card: UpdateNotificationCard{
+			Type: cardType,
+			Data: data,
+		},
+	}
+
+	return c.makeServerAPIRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/%s/wltex/cards/%s/updates", serverAPIBaseURL, countryCode, cardID),
+		reqBody,
+	)
+}
+
+// SendCancelNotification sends a cancel notification to Samsung Wallet Server API.
+// This corresponds to the Cancel Notification API: POST /{cc2}/wltex/cards/{cardId}/cancels
+// Use this to cancel all cards for a specific event (e.g., event cancellation).
+func (c *Client) SendCancelNotification(cardID string, cardType string, data []CancelNotificationData, countryCode string) error {
+	if cardID == "" {
+		return fmt.Errorf("card ID is required")
+	}
+	if countryCode == "" {
+		return fmt.Errorf("country code is required")
+	}
+
+	reqBody := CancelNotificationRequest{
+		Card: CancelNotificationCard{
+			Type: cardType,
+			Data: data,
+		},
+	}
+
+	return c.makeServerAPIRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/%s/wltex/cards/%s/cancels", serverAPIBaseURL, countryCode, cardID),
+		reqBody,
+	)
+}
+
+// makeServerAPIRequest makes an authenticated HTTP request to Samsung Wallet Server API.
+// Uses Bearer token (RS256 signed JWT) for authentication.
+func (c *Client) makeServerAPIRequest(method, url string, payload interface{}) error {
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request payload: %v", err)
+	}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Errorf("failed to create HTTP request: %v", err)
+	}
+
+	// Generate Bearer token
+	token, err := c.jwtManager.CreateServerAPIToken()
+	if err != nil {
+		return fmt.Errorf("failed to create server API token: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("x-smcs-partner-id", c.config.PartnerID)
+	req.Header.Set("x-request-id", fmt.Sprintf("%d", time.Now().UnixNano()))
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to make HTTP request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		responseBody, _ := io.ReadAll(resp.Body)
+		var apiError APIError
+		if err := json.Unmarshal(responseBody, &apiError); err != nil {
+			return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(responseBody))
+		}
+		return &apiError
+	}
+
+	return nil
 }
 
 // Builder factory methods - automatically sets partnerID from client config

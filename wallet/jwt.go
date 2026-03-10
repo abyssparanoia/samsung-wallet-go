@@ -277,6 +277,22 @@ func (j *JWTManager) VerifyCallbackToken(tokenString string) (*CardStateCallback
 	return nil, fmt.Errorf("invalid token")
 }
 
+// CreateServerAPIToken creates a Bearer token for Samsung Wallet Server API authentication.
+// Used for Update Notification API and Cancel Notification API.
+// The token is signed with RS256 using the partner's private key.
+func (j *JWTManager) CreateServerAPIToken() (string, error) {
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"iss": j.partnerID,
+		"iat": now.Unix(),
+		"exp": now.Add(30 * time.Minute).Unix(),
+		"jti": uuid.New().String(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	return token.SignedString(j.partnerPrivateKey)
+}
+
 // parsePrivateKey parses a PEM-encoded RSA private key
 func parsePrivateKey(privateKeyPEM string) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode([]byte(privateKeyPEM))
