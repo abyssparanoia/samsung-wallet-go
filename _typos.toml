@@ -1,0 +1,6 @@
+[files]
+extend-exclude = ["cdata_generation_sample_code_v1.1.2/"]
+
+[default.extend-words]
+encrypter = "encrypter"
+Encrypter = "Encrypter"
