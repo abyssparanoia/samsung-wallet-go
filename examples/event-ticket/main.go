@@ -1,3 +1,4 @@
+// Package main demonstrates the Samsung Wallet SDK integration with an event ticket example.
 package main
 
 import (
@@ -19,7 +20,6 @@ func main() {
 		SamsungPublicKey:  getEnv("SAMSUNG_WALLET_SAMSUNG_PUBLIC_KEY", ""),  // Samsung's public key/certificate
 		CertificateID:     getEnv("SAMSUNG_WALLET_CERTIFICATE_ID", ""),      // 4 digit alphanumeric from Partners Portal
 	})
-
 	if err != nil {
 		log.Fatalf("Failed to create Samsung Wallet client: %v", err)
 	}

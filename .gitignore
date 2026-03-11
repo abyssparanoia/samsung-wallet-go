@@ -1,3 +1,7 @@
 secret/*
 bin/*
 .envrc
+.mcp.json
+coverage.out
+coverage.html
+*.prof
