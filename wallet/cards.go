@@ -1,3 +1,4 @@
+// Package wallet provides the Samsung Wallet SDK for Go.
 package wallet
 
 import (

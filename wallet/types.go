@@ -5,6 +5,7 @@ import "time"
 // CardType represents the type of wallet card
 type CardType string
 
+// CardType constants define supported Samsung Wallet card types.
 const (
 	CardTypeEventTicket CardType = "event_ticket"
 )
@@ -12,6 +13,7 @@ const (
 // TicketSubType represents the subtype of event tickets according to Samsung Wallet API
 type TicketSubType string
 
+// TicketSubType constants define available event ticket subtypes.
 const (
 	TicketSubTypePerformances TicketSubType = "performances" // Concerts, theater, shows
 	TicketSubTypeSports       TicketSubType = "sports"       // Sports events, games
@@ -23,6 +25,7 @@ const (
 // CardState represents the state of a wallet card
 type CardState string
 
+// CardState constants define wallet card lifecycle states.
 const (
 	CardStateActive    CardState = "ACTIVE"
 	CardStateUpdated   CardState = "UPDATED"

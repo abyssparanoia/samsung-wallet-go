@@ -13,11 +13,13 @@ import (
 	"github.com/google/uuid"
 )
 
+const rsaPrivateKeyType = "RSA PRIVATE KEY"
+
 // CDATAClaims represents the claims for Samsung Wallet CDATA JWT
 type CDATAClaims struct {
-	PartnerId     string `json:"partnerId"`
+	PartnerID     string `json:"partnerId"`
 	Ver           string `json:"ver"`
-	CertificateId string `json:"certificateId"`
+	CertificateID string `json:"certificateId"`
 	UTC           int64  `json:"utc"`
 	jwt.RegisteredClaims
 }
@@ -31,7 +33,7 @@ type JWTManager struct {
 }
 
 // NewJWTManager creates a new JWT manager
-func NewJWTManager(partnerPrivateKeyPEM string, samsungPublicKeyPEM string, serviceID string, certificateID string) (*JWTManager, error) {
+func NewJWTManager(partnerPrivateKeyPEM, samsungPublicKeyPEM, serviceID, certificateID string) (*JWTManager, error) {
 	// Parse partner private key
 	partnerPrivateKey, err := parsePrivateKey(partnerPrivateKeyPEM)
 	if err != nil {
@@ -153,7 +155,6 @@ func (j *JWTManager) VerifyToken(tokenString string) (*jwt.MapClaims, error) {
 		}
 		return &j.partnerPrivateKey.PublicKey, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -192,11 +193,11 @@ func (j *JWTManager) GetTokenInfo(tokenString string) (*TokenInfo, error) {
 	info := &TokenInfo{}
 
 	// Extract from headers
-	if partnerId, ok := token.Header["partnerId"].(string); ok {
-		info.ServiceID = partnerId
+	if partnerID, ok := token.Header["partnerId"].(string); ok {
+		info.ServiceID = partnerID
 	}
-	if certId, ok := token.Header["certificateId"].(string); ok {
-		info.CertificateID = certId
+	if certID, ok := token.Header["certificateId"].(string); ok {
+		info.CertificateID = certID
 	}
 	if ver, ok := token.Header["ver"].(string); ok {
 		info.Version = ver
@@ -247,7 +248,6 @@ func (j *JWTManager) VerifyCallbackToken(tokenString string) (*CardStateCallback
 		}
 		return &j.partnerPrivateKey.PublicKey, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -296,14 +296,14 @@ func (j *JWTManager) CreateServerAPIToken() (string, error) {
 // parsePrivateKey parses a PEM-encoded RSA private key
 func parsePrivateKey(privateKeyPEM string) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode([]byte(privateKeyPEM))
-	if block == nil || (block.Type != "PRIVATE KEY" && block.Type != "RSA PRIVATE KEY") {
+	if block == nil || (block.Type != "PRIVATE KEY" && block.Type != rsaPrivateKeyType) {
 		return nil, fmt.Errorf("invalid private key format")
 	}
 
 	var privateKey *rsa.PrivateKey
 	var err error
 
-	if block.Type == "RSA PRIVATE KEY" {
+	if block.Type == rsaPrivateKeyType {
 		// PKCS#1 format
 		privateKey, err = x509.ParsePKCS1PrivateKey(block.Bytes)
 	} else {

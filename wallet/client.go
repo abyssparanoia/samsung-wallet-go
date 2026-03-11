@@ -11,14 +11,16 @@ import (
 
 const (
 	// API paths
-	pathATWLink    = "/v1/wallet/atw/link"
 	pathUpdateCard = "/v1/wallet/card/update"
 	pathCancelCard = "/v1/wallet/card/cancel"
 	pathGetCard    = "/v1/wallet/card/get"
-	pathCardState  = "/v1/wallet/card/state"
 
 	// Samsung Wallet Server API base URL
 	serverAPIBaseURL = "https://api-card.walletsvc.samsung.com"
+
+	// Link types
+	linkTypeDataTransmit = "data_transmit"
+	linkTypeDataFetch    = "data_fetch"
 )
 
 // Client represents the Samsung Wallet client
@@ -82,7 +84,7 @@ func (c *Client) CreateATWLink(cardID string, cardData CardData, linkType string
 	}
 
 	if linkType == "" {
-		linkType = "data_transmit" // default to data transmit
+		linkType = linkTypeDataTransmit // default to data transmit
 	}
 
 	var callback string
@@ -91,9 +93,9 @@ func (c *Client) CreateATWLink(cardID string, cardData CardData, linkType string
 	}
 
 	switch linkType {
-	case "data_transmit":
+	case linkTypeDataTransmit:
 		return c.createDataTransmitLink(cardID, cardData, callback)
-	case "data_fetch":
+	case linkTypeDataFetch:
 		return c.createDataFetchLink(cardID, cardData, callback)
 	default:
 		return "", fmt.Errorf("unsupported link type: %s", linkType)
@@ -107,7 +109,7 @@ func (c *Client) CreateATWLinkFromWalletCard(cardID string, walletCard WalletCar
 	}
 
 	if linkType == "" {
-		linkType = "data_transmit" // default to data transmit
+		linkType = linkTypeDataTransmit // default to data transmit
 	}
 
 	var callback string
@@ -116,9 +118,9 @@ func (c *Client) CreateATWLinkFromWalletCard(cardID string, walletCard WalletCar
 	}
 
 	switch linkType {
-	case "data_transmit":
+	case linkTypeDataTransmit:
 		return c.createDataTransmitLinkFromWalletCard(cardID, walletCard, callback)
-	case "data_fetch":
+	case linkTypeDataFetch:
 		return c.createDataFetchLinkFromWalletCard(cardID, walletCard, callback)
 	default:
 		return "", fmt.Errorf("unsupported link type: %s", linkType)
@@ -126,7 +128,7 @@ func (c *Client) CreateATWLinkFromWalletCard(cardID string, walletCard WalletCar
 }
 
 // createDataTransmitLink creates a data transmit link
-func (c *Client) createDataTransmitLink(cardID string, cardData CardData, callbackURL string) (string, error) {
+func (c *Client) createDataTransmitLink(cardID string, cardData CardData, _ string) (string, error) {
 	// Create CDATA token according to Samsung specification
 	// This generates a JWT with Samsung-specific headers and 30-second expiration
 	cdata, err := c.jwtManager.CreateDataTransmitToken(cardData)
@@ -143,14 +145,14 @@ func (c *Client) createDataTransmitLink(cardID string, cardData CardData, callba
 }
 
 // createDataFetchLink creates a data fetch link
-func (c *Client) createDataFetchLink(cardID string, cardData CardData, callbackURL string) (string, error) {
+func (c *Client) createDataFetchLink(cardID string, cardData CardData, _ string) (string, error) {
 	// Data Fetch Link format: https://a.swallet.link/atw/v3/{certificateId}/{cardId}#Clip?pdata={pdata}
 	// certificateId and cardId are fixed identifiers from Partners Portal
 	// pdata is unique reference ID for this specific card instance
 
 	// Generate a unique reference ID for this card instance
 	// In a real implementation, this should be a secure, non-predictable ID
-	refId := fmt.Sprintf("ref_%s_%d", cardData.CardID, time.Now().Unix())
+	refID := fmt.Sprintf("ref_%s_%d", cardData.CardID, time.Now().Unix())
 
 	// Both certificateId and cardId must be obtained from Partners Portal
 	if c.config.CertificateID == "" {
@@ -158,13 +160,13 @@ func (c *Client) createDataFetchLink(cardID string, cardData CardData, callbackU
 	}
 
 	atwURL := fmt.Sprintf("https://a.swallet.link/atw/v3/%s/%s#Clip?pdata=%s",
-		c.config.CertificateID, cardID, refId)
+		c.config.CertificateID, cardID, refID)
 
 	return atwURL, nil
 }
 
 // createDataTransmitLinkFromWalletCard creates a data transmit link from WalletCard
-func (c *Client) createDataTransmitLinkFromWalletCard(cardID string, walletCard WalletCard, callbackURL string) (string, error) {
+func (c *Client) createDataTransmitLinkFromWalletCard(cardID string, walletCard WalletCard, _ string) (string, error) {
 	// Create CDATA token according to Samsung specification
 	cdata, err := c.jwtManager.CreateDataTransmitTokenFromWalletCard(walletCard)
 	if err != nil {
@@ -178,16 +180,16 @@ func (c *Client) createDataTransmitLinkFromWalletCard(cardID string, walletCard 
 }
 
 // createDataFetchLinkFromWalletCard creates a data fetch link from WalletCard
-func (c *Client) createDataFetchLinkFromWalletCard(cardID string, walletCard WalletCard, callbackURL string) (string, error) {
+func (c *Client) createDataFetchLinkFromWalletCard(cardID string, _ WalletCard, _ string) (string, error) {
 	// Generate a unique reference ID for this card instance
-	refId := fmt.Sprintf("ref_%d", time.Now().Unix())
+	refID := fmt.Sprintf("ref_%d", time.Now().Unix())
 
 	if c.config.CertificateID == "" {
 		return "", fmt.Errorf("certificate ID is required for data fetch links")
 	}
 
 	atwURL := fmt.Sprintf("https://a.swallet.link/atw/v3/%s/%s#Clip?pdata=%s",
-		c.config.CertificateID, cardID, refId)
+		c.config.CertificateID, cardID, refID)
 
 	return atwURL, nil
 }
@@ -206,7 +208,7 @@ func (c *Client) UpdateCard(cardID string, cardData CardData, countryCode string
 }
 
 // CancelCard cancels wallet cards for a specific event
-func (c *Client) CancelCard(eventID string, reason string) error {
+func (c *Client) CancelCard(eventID, reason string) error {
 	request := CancelCardRequest{
 		PartnerID: c.config.PartnerID,
 		EventID:   eventID,
@@ -218,7 +220,7 @@ func (c *Client) CancelCard(eventID string, reason string) error {
 }
 
 // GetCardData retrieves card data
-func (c *Client) GetCardData(cardID string, countryCode string) (*CardData, error) {
+func (c *Client) GetCardData(cardID, countryCode string) (*CardData, error) {
 	request := map[string]interface{}{
 		"partner_id":   c.config.PartnerID,
 		"card_id":      cardID,
@@ -312,7 +314,7 @@ func (c *Client) GetJWTManager() *JWTManager {
 // SendUpdateNotification sends a card state update to Samsung Wallet Server API.
 // This corresponds to the Update Notification API: POST /{cc2}/wltex/cards/{cardId}/updates
 // Use this to update individual card states (e.g., DELETED, EXPIRED, SUSPENDED).
-func (c *Client) SendUpdateNotification(cardID string, cardType string, data []UpdateNotificationData, countryCode string) error {
+func (c *Client) SendUpdateNotification(cardID, cardType string, data []UpdateNotificationData, countryCode string) error {
 	if cardID == "" {
 		return fmt.Errorf("card ID is required")
 	}
@@ -337,7 +339,7 @@ func (c *Client) SendUpdateNotification(cardID string, cardType string, data []U
 // SendCancelNotification sends a cancel notification to Samsung Wallet Server API.
 // This corresponds to the Cancel Notification API: POST /{cc2}/wltex/cards/{cardId}/cancels
 // Use this to cancel all cards for a specific event (e.g., event cancellation).
-func (c *Client) SendCancelNotification(cardID string, cardType string, data []CancelNotificationData, countryCode string) error {
+func (c *Client) SendCancelNotification(cardID, cardType string, data []CancelNotificationData, countryCode string) error {
 	if cardID == "" {
 		return fmt.Errorf("card ID is required")
 	}
@@ -390,7 +392,10 @@ func (c *Client) makeServerAPIRequest(method, url string, payload interface{}) e
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		responseBody, _ := io.ReadAll(resp.Body)
+		responseBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("API request failed with status %d: failed to read body: %v", resp.StatusCode, err)
+		}
 		var apiError APIError
 		if err := json.Unmarshal(responseBody, &apiError); err != nil {
 			return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(responseBody))
